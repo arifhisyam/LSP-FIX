@@ -38,7 +38,7 @@
                         <th class="p-2">Produk</th>
                         <th class="p-2">Harga</th>
                         <th class="p-2">Jumlah</th>
-                        <th class="p-2">Diskon Item</th>
+                        <th class="p-2">Diskon Item (%)</th>
                         <th class="p-2">Subtotal</th>
                         <th class="p-2"></th>
                     </tr>
@@ -54,10 +54,9 @@
                 <span>Total belanja</span>
                 <span id="txt-total-item">Rp 0</span>
             </div>
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between">
                 <span>Diskon</span>
-                <input type="number" min="0" step="0.01" name="diskon" id="diskon"
-                       value="{{ old('diskon', 0) }}" class="w-36 border rounded px-2 py-1 text-right">
+                <span id="txt-diskon">Rp 0</span>
             </div>
             <div class="flex justify-between font-bold text-lg border-t pt-2">
                 <span>Total bayar</span>
@@ -85,7 +84,6 @@
         const oldItems = @json(old('items', []));
 
         const body = document.getElementById('body-item');
-        const diskonEl = document.getElementById('diskon');
         const bayarEl = document.getElementById('pembayaran');
 
         const rupiah = n => 'Rp ' + Math.round(n).toLocaleString('id-ID');
@@ -117,8 +115,11 @@
                            value="${data.jumlah ?? 1}" class="jumlah w-20 border rounded px-2 py-1">
                 </td>
                 <td class="p-2">
-                    <input type="number" min="0" step="0.01" name="items[${i}][diskon_item]"
-                           value="${data.diskon_item ?? 0}" class="diskon-item w-28 border rounded px-2 py-1">
+                    <div class="flex items-center gap-1">
+                        <input type="number" min="0" max="100" step="0.01" name="items[${i}][diskon_persen]"
+                               value="${data.diskon_persen ?? 0}" class="diskon-item w-20 border rounded px-2 py-1">
+                        <span>%</span>
+                    </div>
                 </td>
                 <td class="p-2 subtotal">Rp 0</td>
                 <td class="p-2"><button type="button" class="hapus text-red-600">Hapus</button></td>
@@ -129,24 +130,28 @@
 
         function hitung() {
             let totalItem = 0;
+            let diskon = 0;
 
             body.querySelectorAll('tr').forEach(tr => {
                 const p = produk.find(x => x.id_produk == tr.querySelector('.produk').value);
                 const jumlah = parseInt(tr.querySelector('.jumlah').value) || 0;
-                const diskonItem = parseFloat(tr.querySelector('.diskon-item').value) || 0;
+                const persen = Math.min(Math.max(parseFloat(tr.querySelector('.diskon-item').value) || 0, 0), 100);
                 const harga = p ? parseFloat(p.harga_jual) : 0;
-                const subtotal = Math.max(harga * jumlah - diskonItem, 0);
+                const kotor = harga * jumlah;
+                const potongan = kotor * persen / 100;
+                const subtotal = kotor - potongan;
 
                 tr.querySelector('.harga').textContent = p ? rupiah(harga) : '-';
                 tr.querySelector('.subtotal').textContent = rupiah(subtotal);
-                totalItem += subtotal;
+                totalItem += kotor;
+                diskon += potongan;
             });
 
-            const diskon = parseFloat(diskonEl.value) || 0;
             const total = Math.max(totalItem - diskon, 0);
             const bayar = parseFloat(bayarEl.value) || 0;
 
             document.getElementById('txt-total-item').textContent = rupiah(totalItem);
+            document.getElementById('txt-diskon').textContent = rupiah(diskon);
             document.getElementById('txt-total').textContent = rupiah(total);
             document.getElementById('txt-kembalian').textContent = rupiah(Math.max(bayar - total, 0));
         }
@@ -162,10 +167,8 @@
             }
         });
 
-        diskonEl.addEventListener('input', hitung);
         bayarEl.addEventListener('input', hitung);
 
-        // pulihkan isian kalau validasi gagal, kalau tidak mulai dari satu baris kosong
         const lama = Object.values(oldItems);
         if (lama.length) {
             lama.forEach(item => tambahBaris(item));

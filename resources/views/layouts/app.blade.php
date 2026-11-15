@@ -32,7 +32,7 @@
             class="block px-3 py-2 rounded {{ request()->routeIs('user.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">
             User
             </a>
-            @endif
+            @elseif (auth()->user()->level === 'kasir')
 
             <a href="{{ route('pelanggan.index') }}"
                class="block px-3 py-2 rounded {{ request()->routeIs('pelanggan.*') ? 'bg-gray-700' : 'hover:bg-gray-800' }}">
@@ -43,7 +43,7 @@
             class="block px-3 py-2 rounded {{ request()->routeIs('penjualan.*') ? 'bg-gray-700' : 'hover:bg-gray-800' }}">
             Transaksi
         </a>
-
+        @endif
             <a href="{{ route('laporan.index') }}"
                class="block px-3 py-2 rounded {{ request()->routeIs('laporan.*') ? 'bg-gray-700' : 'hover:bg-gray-800' }}">
             Laporan

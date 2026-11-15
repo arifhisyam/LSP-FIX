@@ -40,8 +40,7 @@ class PenjualanController extends Controller
             'items'                 => 'required|array|min:1',
             'items.*.id_produk'     => 'required|exists:produk,id_produk|distinct',
             'items.*.jumlah'        => 'required|integer|min:1',
-            'items.*.diskon_item'   => 'nullable|numeric|min:0',
-            'diskon'                => 'nullable|numeric|min:0',
+            'items.*.diskon_persen' => 'nullable|numeric|min:0|max:100',
             'pembayaran'            => 'nullable|numeric|min:0',
 
         ], [
@@ -54,11 +53,12 @@ class PenjualanController extends Controller
             $baris = [];
             $totalItem = 0;
             $totalSisaStok = 0;
+            $diskon = 0;
 
             foreach ($data['items'] as $item) {
                 $produk = Produk::lockForUpdate()->findOrFail($item['id_produk']);
                 $jumlah = (int) $item['jumlah'];
-                $diskonItem = (float) ($item['diskon_item'] ?? 0);
+                $persen = (float) ($item['diskon_persen'] ?? 0);
 
                 if ($produk->stok < $jumlah) {
                     throw ValidationException::withMessages([
@@ -66,13 +66,9 @@ class PenjualanController extends Controller
                     ]);
                 }
 
-                $subtotal = ($produk->harga_jual * $jumlah) - $diskonItem;
-
-                if($subtotal < 0) {
-                    throw ValidationException::withMessages([
-                        'items' => "Diskon item {$produk->nama_produk} melebihi harganya.",
-                    ]);
-                }
+                $hargaKotor = $produk->harga_jual * $jumlah;
+                $diskonItem = round($hargaKotor * $persen / 100, 2);
+                $subtotal   = $hargaKotor - $diskonItem;
 
                 $sisa = $produk->stok - $jumlah;
                 $produk->update(['stok' => $sisa]);
@@ -86,19 +82,13 @@ class PenjualanController extends Controller
                     'stok' => $sisa,
                 ];
 
-                $totalItem += $subtotal;
+                $totalItem += $hargaKotor;
+                $diskon += $diskonItem;
                 $totalSisaStok += $sisa;
             }
 
-            $diskon = (float) ($data['diskom'] ?? 0);
             $total = $totalItem - $diskon;
-            $bayar = (float) $data['pembayaran'];
-
-            if ($total < 0) {
-                throw ValidationException::withMessages([
-                    'diskon' => 'Diskon melebihi total belanja',
-                ]);
-            }
+            $bayar = (float) ($data['pembayaran'] ?? 0);
 
             if($bayar < $total) {
                 throw ValidationException::withMessages([

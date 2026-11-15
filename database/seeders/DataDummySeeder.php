@@ -28,7 +28,7 @@ class DataDummySeeder extends Seeder
             $idKategori[$nama] = $k->id_kategori;
         }
 
-        // --- Produk: kode, nama, kategori, harga beli, harga jual, stok, satuan ---
+
         $produk = [
             ['MKN-001', 'Mie Instan Goreng',    'Makanan',    2800,  3500, 100, 'pcs'],
             ['MKN-002', 'Biskuit Cokelat',      'Makanan',    6500,  8000,  50, 'pak'],

@@ -20,7 +20,7 @@
                 <tr>
                     <th class="py-2">Produk</th>
                     <th class="py-2 text-right">Harga</th>
-                    <th class="py-2 text-right">Jml</th>
+                    <th class="py-2 text-right">Jumlah</th>
                     <th class="py-2 text-right">Diskon</th>
                     <th class="py-2 text-right">Subtotal</th>
                 </tr>
@@ -31,7 +31,12 @@
                         <td class="py-2">{{ $d->produk->nama_produk }}</td>
                         <td class="py-2 text-right">{{ number_format($d->harga_jual, 0, ',', '.') }}</td>
                         <td class="py-2 text-right">{{ $d->jumlah }}</td>
-                        <td class="py-2 text-right">{{ number_format($d->diskon_item, 0, ',', '.') }}</td>
+                        <td class="py-2 text-right">
+                            {{ number_format($d->diskon_item, 0, ',', '.') }}
+                            @if ($d->diskon_item > 0 && $d->harga_jual * $d->jumlah > 0)
+                                <span class="text-gray-500">({{ rtrim(rtrim(number_format($d->diskon_item / ($d->harga_jual * $d->jumlah) * 100, 2, ',', '.'), '0'), ',') }}%)</span>
+                            @endif
+                        </td>
                         <td class="py-2 text-right">{{ number_format($d->subtotal, 0, ',', '.') }}</td>
                     </tr>
                 @endforeach
@@ -41,7 +46,7 @@
         <div class="mt-4 ml-auto max-w-xs space-y-1 text-sm">
             <div class="flex justify-between">
                 <span>Total belanja</span>
-                <span>Rp {{ number_format($penjualan->detail_penjualan->sum('subtotal'), 0, ',', '.') }}</span>
+                <span>Rp {{ number_format($penjualan->total + $penjualan->diskon, 0, ',', '.') }}</span>
             </div>
             <div class="flex justify-between">
                 <span>Diskon</span>

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_penjualan');
             $table->unsignedBigInteger('id_produk');
             $table->decimal('harga_jual', 15,2)->default(0);
-            $table->decimal('jumlah', 15,2)->default(0);
+            $table->integer('jumlah')->default(0);
             $table->decimal('diskon_item', 15,2)->default(0);
             $table->decimal('subtotal', 15,2)->default(0);
             $table->integer('stok')->default(0);
