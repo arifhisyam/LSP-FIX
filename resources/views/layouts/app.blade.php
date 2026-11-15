@@ -8,28 +8,28 @@
     @vite('resources/css/app.css')
 </head>
 <body class="bg-gray-100 min-h-screen flex">
-    <aside class="w-60 bg-gray-900 text-gray-100 min-h-screen p-4 flex flex-col print:hidden">
+    <aside class="w-60 bg-emerald-900 text-gray-100 h-screen sticky top-0 p-4 flex flex-col print:hidden">
         <h2 class="text-lg font-bold mb-6">Aplikasi Penjualan</h2>
 
         <nav class="space-y-1 flex-1">
             <a href="{{ route('dashboard') }}"
-            class="block px-3 py-2 rounded {{ request()->routeIs('dashboard') ? 'bg-gray-700' : 'hover:bg-gray-800' }}">
+            class="block px-3 py-2 rounded {{ request()->routeIs('dashboard') ? 'bg-emerald-700' : 'hover:bg-emerald-800' }}">
                 Dashboard
             </a>
 
             @if (auth()->user()->level === 'admin')
             <a href="{{ route('kategori.index') }}"
-            class="block px-3 py-2 rounded {{ request()->routeIs('kategori.*') ? 'bg-gray-700' : 'hover:bg-gray-800' }}">
+            class="block px-3 py-2 rounded {{ request()->routeIs('kategori.*') ? 'bg-emerald-700' : 'hover:bg-emerald-800' }}">
             Kategori
             </a>
 
             <a href="{{ route('produk.index') }}"
-            class="block px-3 py-2 rounded {{ request()->routeIs('produk.*') ? 'bg-gray-700' : 'hover:bg-gray-800' }}">
+            class="block px-3 py-2 rounded {{ request()->routeIs('produk.*') ? 'bg-emerald-700' : 'hover:bg-emerald-800' }}">
             Produk
             </a>
 
             <a href="{{ route('user.index') }}"
-            class="block px-3 py-2 rounded {{ request()->routeIs('user.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">
+            class="block px-3 py-2 rounded {{ request()->routeIs('user.*') ? 'bg-emerald-700' : 'hover:bg-emerald-700' }}">
             User
             </a>
             @elseif (auth()->user()->level === 'kasir')
@@ -38,17 +38,17 @@
             
         
             <a href="{{ route('pelanggan.index') }}"
-               class="block px-3 py-2 rounded {{ request()->routeIs('pelanggan.*') ? 'bg-gray-700' : 'hover:bg-gray-800' }}">
+               class="block px-3 py-2 rounded {{ request()->routeIs('pelanggan.*') ? 'bg-emerald-700' : 'hover:bg-emerald-800' }}">
                 Pelanggan
             </a>
 
             <a href="{{ route('penjualan.index') }}"
-            class="block px-3 py-2 rounded {{ request()->routeIs('penjualan.*') ? 'bg-gray-700' : 'hover:bg-gray-800' }}">
+            class="block px-3 py-2 rounded {{ request()->routeIs('penjualan.*') ? 'bg-emerald-700' : 'hover:bg-emerald-800' }}">
             Transaksi
         </a>
         @endif
             <a href="{{ route('laporan.index') }}"
-               class="block px-3 py-2 rounded {{ request()->routeIs('laporan.*') ? 'bg-gray-700' : 'hover:bg-gray-800' }}">
+               class="block px-3 py-2 rounded {{ request()->routeIs('laporan.*') ? 'bg-emerald-700' : 'hover:bg-emerald-800' }}">
             Laporan
             </a>
 
