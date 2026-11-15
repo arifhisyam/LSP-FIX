@@ -19,7 +19,7 @@ class UserController extends Controller
         return view('user.create');
     }
 
-    public function store (Request $request) 
+    public function store(Request $request)
     {
         $data = $request->validate($this->rules());
         User::create($data);
@@ -37,7 +37,11 @@ class UserController extends Controller
     {
         $data = $request->validate($this->rules($user));
 
-        if(empty($data['password'])) {
+        if ($user->id_user === auth()->id()) {
+            unset($data['level'], $data['status']);
+        }
+
+        if (empty($data['password'])) {
             unset($data['password']);
         }
 
@@ -49,11 +53,11 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        if($user->id_user === auth()->id()) {
+        if ($user->id_user === auth()->id()) {
             return back()->with('error', 'Anda tidak bisa menghapus akun sendiri.');
         }
 
-        if($user->penjualan()->exists()) {
+        if ($user->penjualan()->exists()) {
             return back()->with('error', 'User tidak bisa dihapus karena sudah punya transaksi. Nonaktifkan saja.');
         }
 
@@ -63,14 +67,22 @@ class UserController extends Controller
             ->with('succes', 'User berhasil dihapus');
     }
 
-    private function rules(?User $user)
+    private function rules(?User $user = null)
     {
-        return [
-            'nama_user'         => 'required|string|max:100',
-            'username'          => ['required', 'string', 'max:50', Rule::unique('user', 'username')->ignore($user?->id_user, 'id_user')],
-            'password'          => [$user ? 'nullable' : 'required', 'string', 'min:6'],
-            'level'             => 'required|in:admin,kasir',
-            'status'            => 'required|in:aktif,nonaktif,'
-        ];   
+        $isSelf = $user && $user->id_user === auth()->id();
+
+        $rules = [
+            'nama_user' => 'required|string|max:100',
+            'username'  => ['required', 'string', 'max:50', Rule::unique('user', 'username')->ignore($user?->id_user, 'id_user')],
+            'password'  => [$user ? 'nullable' : 'required', 'string', 'min:6'],
+            'level'     => 'required|in:admin,kasir',
+            'status'    => 'required|in:aktif,nonaktif',
+        ];
+
+        if ($isSelf) {
+            unset($rules['level'], $rules['status']);
+        }
+
+        return $rules;
     }
 }

@@ -34,6 +34,9 @@
             </a>
             @elseif (auth()->user()->level === 'kasir')
 
+        
+            
+        
             <a href="{{ route('pelanggan.index') }}"
                class="block px-3 py-2 rounded {{ request()->routeIs('pelanggan.*') ? 'bg-gray-700' : 'hover:bg-gray-800' }}">
                 Pelanggan
