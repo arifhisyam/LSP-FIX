@@ -11,7 +11,6 @@ class DashboardController extends Controller
     {
         $penjualan = Penjualan::whereDate('tgl_penjualan', today());
 
-        // Kasir hanya melihat transaksi miliknya sendiri
         if (auth()->user()->level === 'kasir') {
             $penjualan->where('id_user', auth()->id());
         }
