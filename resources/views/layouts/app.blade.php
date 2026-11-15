@@ -55,7 +55,7 @@
         
         </nav>
 
-        <div class="border-t border-gray-700 pt-4 text-sm">
+        <div class="border-t border-emerald-700 pt-4 text-sm">
             <p class="font-semibold">{{ auth()->user()->nama_user }}</p>
             <p class="text-gray-400 mb-3">{{ ucfirst(auth()->user()->level )}}</p>
             <form method ="POST" action="{{ route('logout') }}">
